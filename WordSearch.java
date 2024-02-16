@@ -22,8 +22,9 @@ public class WordSearch {
     private static void generate() {
         System.out.println("Generating a new word search...");
     
-        System.out.print("Enter the number of words: ");
+        System.out.print("How many words would you like to enter?: ");
         int numWords = scanner.nextInt();
+        System.out.println();
     
         String[] words = new String[numWords];
         for (int i = 0; i < numWords; i++) {
@@ -31,10 +32,9 @@ public class WordSearch {
             words[i] = scanner.next().toUpperCase();  
         }
         
-        // initializes fixed 2D array for word search
+        // initializes dimensions for fixed 2D array in word search
         int rows = 10;
         int cols = 10;
-        char[][] wordSearch = new char[rows][cols];
 
         // fill empty array with '@'
         for(int i = 0; i < rows; i++) {
@@ -43,43 +43,99 @@ public class WordSearch {
             }
         }
 
-        // for (String word : words) {
-        //     boolean placed = false;
-        //     for (int i = 0; i < 100 && !placed; i++) {
-        //         int row = Math.random()
-        //     }
-        // }
-        
+        //
+        // placement logic
+        //
+
         System.out.println("Word search generated successfully!");
     }
     
-    // public static boolean canPlace(String word, int row, int col, int direction) {
-    //     int rowStep = 0, colStep = 0;
+    public static boolean placeRandomPosition(String word) {
+        int maxAttempts = 100;
+        
+        for (int attempt = 0; attempt < maxAttempts; attempt++) {
+            int direction = (int) (Math.random() * 8);
+            int row = (int) (Math.random() * wordSearch.length);
+            int col = (int) (Math.random() * wordSearch[0].length);
 
-    //     if (direction == 0) colStep = 1;
-    //     else if (direction == 1) rowStep = 1;
-    //     else if (direction == 2) {
-    //         rowStep = 1;
-    //         colStep = 1;
-    //     }
+            if (canPlace(word, row, col, direction)) {
+                attemptToPlace(word, row, col, direction);
+                return true;
+            }
+        }
+        return false;
+    }
 
-    //     for (int i = 0; i < word.length(); i++) {
-    //         int newRow = row + i*rowStep;
-    //         int newCol = col + i*colStep;
-    //         if (newRow >= row || newCol >= col) return false;
-    //         if (wordSearch[newRow][newCol] != null && wordSearch[row][col] != word.charAt(i)) {
-    //             return false;
-    //         }
-    //     }
+    private static boolean canPlace(String word, int startRow, int startCol, int direction) {
+        switch (direction) {
+            case 0:  // Left to Right
+                return startCol + word.length() <= wordSearch[0].length &&
+                    checkNoOverlap(word, startRow, startCol, 1, 0);
+            case 1:  // Right to Left
+                return startCol - word.length() >= 0 &&
+                    checkNoOverlap(word, startRow, startCol, -1, 0);
+            case 2:  // Top to Bottom
+                return startRow + word.length() <= wordSearch.length &&
+                    checkNoOverlap(word, startRow, startCol, 0, 1);
+            case 3:  // Bottom to Top
+                return startRow - word.length() >= 0 &&
+                    checkNoOverlap(word, startRow, startCol, 0, -1);
+        }
+        return false;
+    }
 
-    //     return true;
+    private static boolean checkNoOverlap(String word, int startRow, int startCol, int rowIncrement, int colIncrement) {
+        for (int i = 0; i < word.length(); i++) {
+            int currentRow = startRow + i * rowIncrement;
+            int currentCol = startCol + i * colIncrement;
+    
+            // Check if indices are within bounds before accessing the array
+            if (currentRow >= 0 && currentRow < wordSearch.length && currentCol >= 0 && currentCol < wordSearch[0].length) {
+                char currentCell = wordSearch[currentRow][currentCol];
+                if (currentCell != '@' && currentCell != word.charAt(i)) {
+                    return false;  // Overlap detected
+                }
+            } else {
+                return false;  // Out of bounds
+            }
+        }
+        return true;  // No overlap
+    }
+
+    private static void attemptToPlace(String word, int startRow, int startCol, int direction) {
+        switch (direction) {
+            case 0:  // Left to Right
+                placeWord(word, startRow, startCol, 1, 0);
+                break;
+            case 1:  // Right to Left
+                placeWord(word, startRow, startCol, -1, 0);
+                break;
+            case 2:  // Top to Bottom
+                placeWord(word, startRow, startCol, 0, 1);
+                break;
+            case 3:  // Bottom to Top
+                placeWord(word, startRow, startCol, 0, -1);
+                break;
+        }
+    }
+
+    private static void placeWord(String word, int startRow, int startCol, int rowIncrement, int colIncrement) {
+        for (int i = 0; i < word.length(); i++) {
+            char currentChar = word.charAt(i);
+            wordSearch[startRow + i * rowIncrement][startCol + i * colIncrement] = currentChar;
+    
+            // Update the solution array with the original character or 'X'
+            if (solution != null) {
+                solution[startRow + i * rowIncrement][startCol + i * colIncrement] = (currentChar != '@') ? 'X' : '@';
+            }
+        }
+    }
+
+    // public static void print() {
+
     // }
 
-    public static void print() {
+    // public static void showSolution() {
 
-    }
-
-    public static void showSolution() {
-
-    }
+    // }
 }

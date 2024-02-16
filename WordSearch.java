@@ -1,3 +1,14 @@
+/**
+ * Name: Joshua Henderson
+ * Date: February 12, 2023
+ * Project: Word Search Program
+ * Purpose: This program implements a Word Search Generator that allows users to create word search puzzles
+ *          based on user-provided words. The program includes methods for printing an introduction,
+ *          generating word searches, printing the current word search, showing solutions, and handling user input.
+ *          It aims to reinforce key programming concepts, including printing, data types, methods, loops, arrays,
+ *          and user input handling, while providing a practical application in the form of a word search generator.
+ */
+
 import java.util.Scanner;
 
 public class WordSearch {
